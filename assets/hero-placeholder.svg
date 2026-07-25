@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" role="img" aria-labelledby="title desc">
+  <title id="title">Profile photo placeholder</title><desc id="desc">Replace this illustration with your own photograph.</desc>
+  <rect width="640" height="440" fill="#dff2ef"/><circle cx="320" cy="154" r="82" fill="#5a9d96"/>
+  <path d="M142 415c22-118 103-171 178-171s156 53 178 171" fill="#0f766e"/>
+  <text x="320" y="405" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="23" font-weight="700">YOUR PHOTO</text>
+</svg>
