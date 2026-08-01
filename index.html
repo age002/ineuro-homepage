@@ -1,218 +1,254 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Brain Gardening | Chung Eun Grace Yoon, PhD</title>
-  <meta name="description" content="Brain Gardening — research, resilience, and science storytelling by Chung Eun Grace Yoon, PhD." />
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brain Gardening | Personal Research Lab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Favicon / iOS icons (모두 루트(/)에 파일 배치) -->
+  <link rel="icon" href="brain.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png" sizes="180x180">
+  <meta name="apple-mobile-web-app-title" content="Brain Gardening">
+  <meta name="theme-color" content="#f5f6f8">
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap");
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: #f5f6f8;
+      letter-spacing: 0;
+    }
+
+    .brand-wordmark {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: clamp(2.35rem, 5vw, 3.45rem);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 0.9;
+    }
+
+    .page-link:focus-visible {
+      outline: 3px solid rgba(6, 182, 212, 0.45);
+      outline-offset: 3px;
+    }
+
+    .nav-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 55%, rgba(255, 255, 255, 0.75));
+      opacity: 0;
+      transition: opacity 180ms ease;
+      pointer-events: none;
+    }
+
+    .nav-card:hover::after {
+      opacity: 1;
+    }
+
+    .nav-icon {
+      align-items: center;
+      border-radius: 999px;
+      display: inline-flex;
+      flex: 0 0 auto;
+      height: 3rem;
+      justify-content: center;
+      transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+      width: 3rem;
+    }
+
+    .nav-card:hover .nav-icon {
+      transform: translateX(2px) scale(1.04);
+    }
+  </style>
 </head>
-<body>
-  <div class="ambient ambient-one"></div>
-  <div class="ambient ambient-two"></div>
-
-  <header class="site-header" aria-label="Main navigation">
-    <a class="brand" href="#top" aria-label="Brain Gardening home">
-      <span class="brand-mark">iNeuro</span>
-      <span class="brand-text">Chung Eun Grace Yoon, PhD</span>
-    </a>
-    <nav class="nav-links">
-      <a href="#about">About</a>
-      <a href="#atlas">Atlas</a>
-      <a href="#worlds">Worlds</a>
-      <a href="#connect">Connect</a>
-    </nav>
-  </header>
-
-  <main id="top">
-    <section class="hero section-shell">
-      <div class="hero-copy">
-        <p class="eyebrow">Stroke Neuroscientist · Emotion Translator · Concept Maker · Science Storyteller</p>
-        <h1>Research fueled by curiosity, coffee, and conversation.</h1>
-        <p class="hero-lead">
-          I study microvascular resilience after stroke — how the injured brain survives,
-          adapts, and reveals its golden window for recovery.
-        </p>
-        <div class="hero-actions">
-          <a class="primary-button" href="#atlas">Explore the no-reflow atlas</a>
-          <a class="ghost-button" href="#connect">3C ready?</a>
+<body class="min-h-screen text-slate-950 antialiased">
+  <main class="px-4 py-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+      <header class="mb-8 bg-white px-5 py-5 shadow-sm sm:px-8">
+        <div class="flex items-center">
+          <a href="index.html" class="page-link flex items-center gap-4 rounded-lg">
+            <span class="flex h-16 w-16 items-center justify-center rounded-lg bg-white">
+              <img src="brain.svg" alt="Brain Gardening logo" class="h-14 w-14">
+            </span>
+            <span class="brand-wordmark text-3xl font-black text-black sm:text-4xl">Brain Gardening</span>
+          </a>
         </div>
-      </div>
+      </header>
 
-      <div class="hero-visual" aria-label="Abstract no-reflow atlas visualization">
-        <div class="visual-card">
-          <div class="visual-header">
-            <span>No-Reflow Atlas</span>
-            <span>CO₂ as probe</span>
+      <section class="mb-8 overflow-hidden bg-white shadow-sm">
+        <img src="assets/lab-hero.png" alt="Brain Gardening lab homepage" class="h-auto w-full">
+      </section>
+
+      <section class="pb-8 text-center">
+        <h1 class="text-3xl font-black text-black sm:text-4xl">Research and Computer Tips</h1>
+      </section>
+
+      <section id="board" class="grid gap-8 lg:grid-cols-2">
+        <article id="research" class="overflow-hidden bg-white shadow-sm">
+          <a href="#research-links" class="page-link block">
+            <img src="assets/research-bg.png" alt="Research" class="aspect-[16/9] w-full object-cover">
+          </a>
+          <div id="research-links" class="p-5 sm:p-6">
+            <div class="grid gap-4">
+              <a href="about.html" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-sky-500 hover:bg-white">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Profile</span>
+                  <span class="mt-2 block text-2xl font-black text-black">About</span>
+                </span>
+                <span class="nav-icon bg-sky-100 text-sky-700">
+                  <i data-lucide="user-round" class="h-6 w-6"></i>
+                </span>
+              </a>
+
+              <a href="publication.html" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-sky-500 hover:bg-white">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Publications</span>
+                  <span class="mt-2 block text-2xl font-black text-black">Publication</span>
+                </span>
+                <span class="nav-icon bg-sky-100 text-sky-700">
+                  <i data-lucide="file-text" class="h-6 w-6"></i>
+                </span>
+              </a>
+
+              <div class="grid gap-4 sm:grid-cols-3">
+                <a href="board.html?group=Research&item=BT" class="page-link nav-card flex min-h-36 items-start justify-between gap-3 border border-slate-200 bg-slate-50 p-5 transition hover:border-sky-500 hover:bg-white">
+                  <span>
+                    <span class="text-xs font-black uppercase text-slate-500">Board</span>
+                    <span class="mt-2 block text-xl font-black text-black">BT</span>
+                    <span class="mt-1 block text-sm font-semibold text-slate-600">Bio Technology</span>
+                  </span>
+                  <span class="nav-icon bg-sky-100 text-sky-700">
+                    <i data-lucide="flask-conical" class="h-5 w-5"></i>
+                  </span>
+                </a>
+
+                <a href="board.html?group=Research&item=IT" class="page-link nav-card flex min-h-36 items-start justify-between gap-3 border border-slate-200 bg-slate-50 p-5 transition hover:border-sky-500 hover:bg-white">
+                  <span>
+                    <span class="text-xs font-black uppercase text-slate-500">Board</span>
+                    <span class="mt-2 block text-xl font-black text-black">IT</span>
+                    <span class="mt-1 block text-sm font-semibold text-slate-600">Information Technology</span>
+                  </span>
+                  <span class="nav-icon bg-sky-100 text-sky-700">
+                    <i data-lucide="cpu" class="h-5 w-5"></i>
+                  </span>
+                </a>
+
+                <a href="board.html?group=Research&item=Clinical" class="page-link nav-card flex min-h-36 items-start justify-between gap-3 border border-slate-200 bg-slate-50 p-5 transition hover:border-sky-500 hover:bg-white">
+                  <span>
+                    <span class="text-xs font-black uppercase text-slate-500">Board</span>
+                    <span class="mt-2 block text-xl font-black text-black">Clinical</span>
+                    <span class="mt-1 block text-sm font-semibold text-slate-600">Research</span>
+                  </span>
+                  <span class="nav-icon bg-sky-100 text-sky-700">
+                    <i data-lucide="stethoscope" class="h-5 w-5"></i>
+                  </span>
+                </a>
+              </div>
+            </div>
           </div>
-          <svg class="atlas-svg" viewBox="0 0 680 500" role="img" aria-labelledby="atlasTitle atlasDesc">
-            <title id="atlasTitle">Abstract brain resilience and no-reflow golden time map</title>
-            <desc id="atlasDesc">A soft scientific illustration showing a carbon dioxide pulse entering a brain-shaped atlas with infarct core, penumbra, no-reflow points, and a golden time window.</desc>
-            <defs>
-              <linearGradient id="brainGradient" x1="80" x2="560" y1="80" y2="420" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stop-color="#f9fbff"/>
-                <stop offset="0.48" stop-color="#eef4ff"/>
-                <stop offset="1" stop-color="#f7f2ff"/>
-              </linearGradient>
-              <linearGradient id="goldLine" x1="0" x2="1">
-                <stop offset="0" stop-color="#f8c86a"/>
-                <stop offset="1" stop-color="#ff8fa3"/>
-              </linearGradient>
-              <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#30527a" flood-opacity="0.16"/>
-              </filter>
-              <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur stdDeviation="8" result="blur"/>
-                <feMerge>
-                  <feMergeNode in="blur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
+        </article>
 
-            <path class="co2-pulse" d="M42 96 C92 68, 120 138, 168 104 S248 80, 292 118"/>
-            <text x="45" y="64" class="svg-label">CO₂ pulse</text>
-            <circle class="pulse-dot" cx="306" cy="122" r="7"/>
-            <circle class="pulse-dot ghost" cx="324" cy="126" r="4"/>
-            <circle class="pulse-dot ghost" cx="340" cy="130" r="3"/>
+        <article id="computer-tips" class="overflow-hidden bg-white shadow-sm">
+          <a href="#computer-links" class="page-link block">
+            <img src="assets/computer-bg.png" alt="Computer tips" class="aspect-[16/9] w-full object-cover">
+          </a>
+          <div id="computer-links" class="p-5 sm:p-6">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <a href="board.html?group=Computer%20tips&item=Excel" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-orange-500 hover:bg-white">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Computer Tips</span>
+                  <span class="mt-2 block text-2xl font-black text-black">Excel</span>
+                </span>
+                <span class="nav-icon bg-orange-100 text-orange-700">
+                  <i data-lucide="table-2" class="h-6 w-6"></i>
+                </span>
+              </a>
 
-            <path class="brain-shape" filter="url(#softShadow)" d="M342 82 C436 62, 542 107, 581 199 C626 306, 553 420, 421 430 C318 438, 241 401, 184 338 C114 260, 133 146, 232 103 C260 90, 297 89, 342 82 Z"/>
-            <path class="brain-fold" d="M230 153 C276 130, 314 150, 330 190 C348 235, 315 269, 273 260"/>
-            <path class="brain-fold" d="M371 135 C433 137, 486 177, 494 232 C504 298, 447 337, 393 318"/>
-            <path class="brain-fold" d="M210 301 C268 330, 321 318, 360 283 C392 254, 434 259, 469 287"/>
-            <path class="brain-fold faint" d="M302 111 C291 164, 354 176, 377 215 C408 266, 372 324, 326 357"/>
+              <a href="board.html?group=Computer%20tips&item=Word" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-orange-500 hover:bg-white">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Computer Tips</span>
+                  <span class="mt-2 block text-2xl font-black text-black">Word</span>
+                </span>
+                <span class="nav-icon bg-orange-100 text-orange-700">
+                  <i data-lucide="file-type-2" class="h-6 w-6"></i>
+                </span>
+              </a>
 
-            <ellipse class="core" cx="446" cy="282" rx="54" ry="38" transform="rotate(-14 446 282)"/>
-            <ellipse class="penumbra" cx="442" cy="281" rx="91" ry="68" transform="rotate(-14 442 281)"/>
-            <text x="487" y="334" class="svg-small">infarct core</text>
-            <text x="517" y="250" class="svg-small">penumbra</text>
+              <a href="board.html?group=Computer%20tips&item=%EC%95%84%EB%9E%98%ED%95%9C%EA%B8%80" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-orange-500 hover:bg-white">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Computer Tips</span>
+                  <span class="mt-2 block text-2xl font-black text-black">아래한글</span>
+                </span>
+                <span class="nav-icon bg-orange-100 text-orange-700">
+                  <i data-lucide="languages" class="h-6 w-6"></i>
+                </span>
+              </a>
 
-            <g class="micro-dots">
-              <circle cx="383" cy="250" r="4"/>
-              <circle cx="406" cy="218" r="3.5"/>
-              <circle cx="430" cy="241" r="3"/>
-              <circle cx="471" cy="222" r="3.8"/>
-              <circle cx="498" cy="263" r="3.2"/>
-              <circle cx="421" cy="325" r="3.6"/>
-              <circle cx="368" cy="300" r="3"/>
-            </g>
-            <path class="flow-line" d="M262 375 C323 355, 386 351, 464 381 C509 398, 538 390, 583 362"/>
-            <text x="430" y="407" class="svg-small">microvascular flow</text>
+              <a href="board.html?group=Computer%20tips&item=Statistics" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-orange-500 hover:bg-white">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Computer Tips</span>
+                  <span class="mt-2 block text-2xl font-black text-black">Statistics</span>
+                </span>
+                <span class="nav-icon bg-orange-100 text-orange-700">
+                  <i data-lucide="chart-column" class="h-6 w-6"></i>
+                </span>
+              </a>
 
-            <g class="golden-window">
-              <rect x="104" y="406" width="232" height="46" rx="23"/>
-              <path d="M128 429 L208 429 L238 418 L269 438 L314 438"/>
-              <text x="132" y="436" class="svg-gold-text">golden time</text>
-            </g>
-          </svg>
-        </div>
-      </div>
-    </section>
+              <a href="board.html?group=Computer%20tips&item=Education" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-orange-500 hover:bg-white">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Computer Tips</span>
+                  <span class="mt-2 block text-2xl font-black text-black">Education</span>
+                </span>
+                <span class="nav-icon bg-orange-100 text-orange-700">
+                  <i data-lucide="graduation-cap" class="h-6 w-6"></i>
+                </span>
+              </a>
 
-    <section id="about" class="section-shell split-section">
-      <div>
-        <p class="section-kicker">About</p>
-        <h2>I translate what I feel, observe, and discover.</h2>
-      </div>
-      <div class="quiet-card manifesto-card">
-        <p>
-          I translate emotions into language, language into concepts, and concepts into stories —
-          so that science can become more human, more memorable, and more connected.
-        </p>
-        <div class="flow-steps" aria-label="Personal creative process">
-          <span>Emotion</span>
-          <i></i>
-          <span>Language</span>
-          <i></i>
-          <span>Concept</span>
-          <i></i>
-          <span>Story</span>
-        </div>
-      </div>
-    </section>
+              <a href="board.html?group=Computer%20tips&item=Program" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-orange-500 hover:bg-white">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Computer Tips</span>
+                  <span class="mt-2 block text-2xl font-black text-black">Program</span>
+                </span>
+                <span class="nav-icon bg-orange-100 text-orange-700">
+                  <i data-lucide="code-2" class="h-6 w-6"></i>
+                </span>
+              </a>
 
-    <section id="atlas" class="section-shell atlas-section">
-      <div class="section-heading">
-        <p class="section-kicker">Research concept</p>
-        <h2>No-reflow atlas, golden time, and brain resilience.</h2>
-        <p>
-          Click each concept to open the lens. This will become the scientific world map behind my work.
-        </p>
-      </div>
-
-      <div class="concept-grid" role="tablist" aria-label="Research concept lenses">
-        <button class="concept-chip active" type="button" data-concept="resilience">Brain resilience</button>
-        <button class="concept-chip" type="button" data-concept="co2">CO₂ probe</button>
-        <button class="concept-chip" type="button" data-concept="noreflow">No-reflow</button>
-        <button class="concept-chip" type="button" data-concept="golden">Golden time</button>
-        <button class="concept-chip" type="button" data-concept="atlas">Atlas mapping</button>
-        <button class="concept-chip" type="button" data-concept="story">Science storytelling</button>
-      </div>
-
-      <article class="concept-lens" aria-live="polite">
-        <div>
-          <p class="lens-label">Current lens</p>
-          <h3 id="lens-title">Brain resilience</h3>
-          <p id="lens-body">
-            Brain resilience asks why some injured brains endure, adapt, and recover better than others.
-            In my work, resilience is read through microvascular flow, BBB integrity, pericyte response,
-            and behavioral recovery after stroke.
-          </p>
-        </div>
-        <div class="lens-orbit" aria-hidden="true">
-          <span></span><span></span><span></span>
-          <strong id="lens-keyword">resilience</strong>
-        </div>
-      </article>
-    </section>
-
-    <section id="worlds" class="section-shell worlds-section">
-      <div class="section-heading narrow">
-        <p class="section-kicker">Worlds I am building</p>
-        <h2>Not just a CV. A living ecosystem.</h2>
-      </div>
-
-      <div class="world-card-grid">
-        <a class="world-card" href="board.html?group=Research&amp;item=BT" aria-label="Open Brain Gardening board">
-          <span class="world-icon">✦</span>
-          <h3>Brain Gardening</h3>
-          <p>Short reflections on neuroscience, resilience, research life, and the human side of becoming a scientist.</p>
-        </a>
-        <a class="world-card" href="board.html?group=Research&amp;item=Clinical" aria-label="Open Brain Gym board">
-          <span class="world-icon">⌁</span>
-          <h3>Brain Gym</h3>
-          <p>Small workouts for scientific thinking, speaking, writing, and growing into a stronger human scientist.</p>
-        </a>
-        <a class="world-card" href="board.html?group=Computer%20tips&amp;item=Program" aria-label="Open Lab Tools board">
-          <span class="world-icon">⌘</span>
-          <h3>iYoon Lab Tools</h3>
-          <p>Human-centered tools for clearer lab routines: Lab Log, Meeting Memo, IF Calculator, and beyond.</p>
-        </a>
-      </div>
-    </section>
-
-    <section id="connect" class="section-shell connect-section">
-      <div class="connect-card">
-        <p class="section-kicker">Connect</p>
-        <h2>Curiosity · Coffee · Conversation</h2>
-        <p>
-          My CQ — Coffee Quotient — is high. If curiosity brings us together,
-          coffee can start the conversation. If we are 3C ready, let’s call, connect, and collaborate.
-        </p>
-        <div class="connect-actions">
-          <a class="primary-button" href="about.html">About the lab</a>
-          <a class="ghost-button" href="board.html?group=Research&amp;item=BT">Research board</a>
-          <a class="ghost-button" href="board.html?group=Computer%20tips&amp;item=Program">Lab tools</a>
-        </div>
-      </div>
-    </section>
+              <a href="board.html?group=Computer%20tips&item=Etc" class="page-link nav-card flex min-h-28 items-center justify-between gap-4 border border-slate-200 bg-slate-50 p-5 transition hover:border-orange-500 hover:bg-white sm:col-span-2">
+                <span>
+                  <span class="text-xs font-black uppercase text-slate-500">Computer Tips</span>
+                  <span class="mt-2 block text-2xl font-black text-black">Etc</span>
+                </span>
+                <span class="nav-icon bg-orange-100 text-orange-700">
+                  <i data-lucide="circle-ellipsis" class="h-6 w-6"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
   </main>
-
-  <footer class="footer">
-    <span>© 2026 Chung Eun Grace Yoon, PhD</span>
-    <span>Designed for curiosity, coffee, and conversation.</span>
-  </footer>
-
-  <script src="script.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
