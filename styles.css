@@ -85,23 +85,18 @@ button { font: inherit; }
   min-width: 0;
 }
 .brand-mark {
-  width: 34px;
+  width: 62px;
   height: 34px;
   border-radius: 12px;
   display: inline-grid;
   place-items: center;
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: -.02em;
   background: linear-gradient(135deg, #111827, #5b7cfa 58%, #56c7d8);
   box-shadow: 0 10px 22px rgba(91, 124, 250, .24);
   overflow: hidden;
-}
-.brand-mark img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
 }
 .brand-text {
   font-size: 14px;
