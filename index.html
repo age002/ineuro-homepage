@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Favicon / iOS icons (모두 루트(/)에 파일 배치) -->
-  <link rel="icon" href="brain.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/brain-gardening.svg" type="image/svg+xml">
   <link rel="icon" href="favicon-32x32.png" sizes="32x32" type="image/png">
   <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
@@ -45,6 +45,11 @@
       font-weight: 400;
       letter-spacing: -0.035em;
       line-height: 1;
+    }
+    .logo-frame {
+      background: rgba(255, 248, 236, 0.96) !important;
+      border: 1px solid rgba(176, 138, 74, 0.72);
+      box-shadow: 0 8px 20px rgba(23, 12, 29, 0.2);
     }
     .section-title { color: #472852 !important; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; letter-spacing: -0.02em; }
     .text-black, .text-slate-950 { color: #302a33 !important; }
@@ -100,8 +105,8 @@
       <header class="mb-8 bg-white px-5 py-5 shadow-sm sm:px-8">
         <div class="flex items-center">
           <a href="index.html" class="page-link flex items-center gap-4 rounded-lg">
-            <span class="flex h-16 w-16 items-center justify-center rounded-lg bg-white">
-              <img src="brain.svg" alt="Brain Gardening logo" class="h-14 w-14">
+            <span class="logo-frame flex h-16 w-16 items-center justify-center rounded-2xl bg-white">
+              <img src="assets/brain-gardening.svg" alt="Brain Gardening logo" class="h-14 w-14">
             </span>
             <span class="brand-wordmark text-3xl font-black text-black sm:text-4xl">Brain Gardening</span>
           </a>
