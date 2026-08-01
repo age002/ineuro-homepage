@@ -6,11 +6,10 @@
  * 자세한 순서는 FIREBASE_SETUP.md를 참고하세요.
  */
 window.firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "AIzaSyAcwPHUPKOGzWrpKPnLqh4m9oDzTefCRR8",
+  authDomain: "ineuro-homepage.firebaseapp.com",
+  projectId: "ineuro-homepage",
+  storageBucket: "ineuro-homepage.firebasestorage.app",
+  messagingSenderId: "326141085367",
+  appId: "1:326141085367:web:9cb8ec7405204db96b6f32"
 };
