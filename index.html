@@ -16,7 +16,7 @@
   <meta name="theme-color" content="#5a3d62">
 
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap");
 
     html {
       scroll-behavior: smooth;
@@ -24,19 +24,35 @@
 
     body {
       font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      background: #f3f0ee;
+      background: #e8e0e7;
       letter-spacing: 0;
     }
 
     /* Brain Gardening — vintage purple, warm gray, and restrained gold */
     body { color: #302a33; }
-    header, article, section.bg-white { background: #fcfaf8 !important; }
+    header {
+      background: linear-gradient(135deg, #351f42 0%, #5a3d62 70%, #6d4b70 100%) !important;
+      border: 1px solid rgba(176, 138, 74, 0.55);
+      border-radius: 22px;
+      box-shadow: 0 18px 40px rgba(53, 31, 66, 0.22);
+    }
+    article, section.bg-white { background: #fcfaf8 !important; }
+    article { border: 1px solid #cbbdca; border-radius: 18px; box-shadow: 0 12px 30px rgba(67, 43, 74, 0.1); }
+    .brand-wordmark {
+      color: #fff8ec !important;
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      line-height: 1;
+    }
+    .section-title { color: #472852 !important; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; letter-spacing: -0.02em; }
     .text-black, .text-slate-950 { color: #302a33 !important; }
     .text-slate-500, .text-slate-600 { color: #857b88 !important; }
-    .nav-card { background: #f7f2f4 !important; border-color: #d8cdd5 !important; }
-    .nav-card:hover { background: #fcfaf8 !important; border-color: #b08a4a !important; }
-    .nav-icon.bg-sky-100, .nav-icon.bg-orange-100 { background: #e9deea !important; }
-    .nav-icon.text-sky-700, .nav-icon.text-orange-700 { color: #5a3d62 !important; }
+    .nav-card { background: #f4eaf2 !important; border-color: #cbb5c8 !important; border-radius: 14px; box-shadow: 0 5px 14px rgba(67, 43, 74, 0.06); }
+    .nav-card:hover { background: #fffaf7 !important; border-color: #b08a4a !important; box-shadow: 0 12px 24px rgba(67, 43, 74, 0.14); }
+    .nav-icon.bg-sky-100, .nav-icon.bg-orange-100 { background: #d8c1d8 !important; box-shadow: inset 0 0 0 1px rgba(90, 61, 98, 0.18); }
+    .nav-icon.text-sky-700, .nav-icon.text-orange-700 { color: #472852 !important; }
 
     .page-link:focus-visible {
       outline: 3px solid rgba(176, 138, 74, 0.7);
@@ -87,7 +103,7 @@
             <span class="flex h-16 w-16 items-center justify-center rounded-lg bg-white">
               <img src="brain.svg" alt="Brain Gardening logo" class="h-14 w-14">
             </span>
-            <span class="text-3xl font-black text-black sm:text-4xl">Brain Gardening</span>
+            <span class="brand-wordmark text-3xl font-black text-black sm:text-4xl">Brain Gardening</span>
           </a>
         </div>
       </header>
@@ -97,7 +113,7 @@
       </section>
 
       <section class="pb-8 text-center">
-        <h1 class="text-3xl font-black text-black sm:text-4xl">Research and Computer Tips</h1>
+        <h1 class="section-title text-3xl font-black text-black sm:text-4xl">Research and Computer Tips</h1>
       </section>
 
       <section id="board" class="grid gap-8 lg:grid-cols-2">
