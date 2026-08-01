@@ -1,0 +1,496 @@
+<!-- board.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta charset="UTF-8" />
+  <title>글 목록</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    firebase.initializeApp(window.firebaseConfig);
+    const auth = firebase.auth();
+    auth.languageCode = 'ko';
+    const db = firebase.firestore();
+  </script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background-color: #f8fafc; /* light 기본 */
+      color: #0f172a;
+      max-width: 720px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .btn-purple {
+      display: inline-block;
+      background-color: #2563eb;
+      color: white;
+      font-weight: bold;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.2rem;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .btn-purple:hover { background-color: #3b82f6; }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+
+    .post {
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .post a {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #0ea5e9;
+      text-decoration: none;
+    }
+    .post a:hover { text-decoration: underline; }
+
+    .meta { font-size: 0.9rem; color: #475569; margin-top: 0.3rem; }
+
+    .loading { text-align: center; padding: 2rem; color: #64748b; }
+    .error { color: #ef4444; text-align: center; padding: 2rem; }
+
+    .login-form, .user-info {
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      border-radius: 4px;
+    }
+
+    .login-form button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 0.5rem;
+    }
+
+    .logout-btn {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+
+    .floating-write-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 6px 16px rgba(2,6,23,0.18);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+    }
+    .floating-write-btn:hover { background-color: #3b82f6; transform: scale(1.1); }
+    .floating-write-btn:active { transform: scale(0.95); }
+    .floating-write-btn.disabled { background-color: #94a3b8; cursor: not-allowed; opacity: 0.7; }
+
+    @media (max-width: 768px) {
+      .floating-write-btn { bottom: 1rem; right: 1rem; width: 50px; height: 50px; font-size: 1.2rem; }
+    }
+
+    /* 알림 시스템 */
+    .notification {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      z-index: 1300;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-weight: bold;
+      max-width: 300px;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+    }
+    
+    .notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .notification.success {
+      background: #10b981;
+      color: white;
+    }
+    
+    .notification.warning {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .notification.error {
+      background: #ef4444;
+      color: white;
+    }
+
+    .theme-btn {
+      position: fixed; top: 12px; right: 12px; z-index: 1200;
+      width: 42px; height: 42px; border-radius: 50%; border: none;
+      background: #e2e8f0; color: #0f172a; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+
+    /* 다크 모드 오버라이드 */
+    [data-theme="dark"] body { background:#121212; color:#e0e0e0; }
+    [data-theme="dark"] .post, [data-theme="dark"] .login-form, [data-theme="dark"] .user-info { background:#1e1e1e; border-color:#333; }
+    [data-theme="dark"] .meta { color:#999; }
+    [data-theme="dark"] .btn-purple { background:#3f51b5; }
+    [data-theme="dark"] .btn-purple:hover { background:#5c6bc0; }
+    [data-theme="dark"] h1 { border-color:#333; }
+    [data-theme="dark"] .floating-write-btn { background:#3f51b5; }
+    [data-theme="dark"] .theme-btn { background:#334155; color:#fff; }
+    [data-theme="dark"] #sortSelect { background:#1e1e1e; color:#e0e0e0; border-color:#333; }
+  </style>
+</head>
+<body>
+  <button id="themeToggle" class="theme-btn" aria-label="Toggle theme">☀️</button>
+
+  <h1>
+    <span>글 목록</span>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <select id="sortSelect" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #e5e7eb; background: white; color: #0f172a;">
+        <option value="newest">최신순</option>
+        <option value="oldest">오래된순</option>
+        <option value="title">제목순</option>
+        <option value="title-desc">제목역순</option>
+      </select>
+      <a href="index.html" class="btn-purple" style="display:inline-flex;align-items:center;gap:8px;">🏠 홈으로</a>
+    </div>
+  </h1>
+
+  <div id="userInfo" class="user-info" style="display:none;">
+    <span id="userEmail"></span>
+    <button onclick="logout()" class="logout-btn">로그아웃</button>
+  </div>
+
+  <div id="loginForm" class="login-form" style="display:none;">
+    <h3>로그인</h3>
+    <input type="email" id="email" placeholder="admin@example.com">
+    <input type="password" id="password" placeholder="비밀번호">
+    <button onclick="login()">로그인</button>
+    <button onclick="signup()">회원가입</button>
+    <button onclick="resetPassword()" type="button">비밀번호 재설정</button>
+  </div>
+
+  <div id="list">
+    <div class="loading">글 목록을 불러오는 중...</div>
+  </div>
+
+  <button id="floatingWriteBtn" class="floating-write-btn" onclick="handleWriteClick()">✏️</button>
+
+  <script>
+    // 알림 시스템
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // 애니메이션을 위한 delay
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+      
+      // 3초 후 자동 삭제
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    function qs(key) { const u = new URL(location.href); return u.searchParams.get(key); }
+
+    const group = qs('group') || '';
+    const item = qs('item') || '';
+    const list = document.getElementById('list');
+    const loginForm = document.getElementById('loginForm');
+    const userInfo = document.getElementById('userInfo');
+    const floatingWriteBtn = document.getElementById('floatingWriteBtn');
+    const sortSelect = document.getElementById('sortSelect');
+    let currentPosts = []; // Firestore 또는 캐시에서 가져온 모든 글 원본
+    let postsToRender = []; // 화면에 표시할 필터링 및 정렬된 글 목록
+    let lastRenderedIndex = 0; // 마지막으로 렌더링된 글의 인덱스
+    const POSTS_PER_PAGE = 30; // 한 번에 불러올 글의 수
+    let isLoadingMore = false; // 추가 글 로딩 중인지 여부 (중복 실행 방지)
+
+    function getLocalPosts() { try { return JSON.parse(localStorage.getItem('homepage_public_posts') || '[]'); } catch (e) { return []; } }
+    function saveLocalPosts(posts) { try { localStorage.setItem('homepage_public_posts', JSON.stringify(posts)); } catch (e) {} }
+
+    function sortPosts(posts, sortType) {
+      const sortedPosts = [...posts];
+      
+      switch (sortType) {
+        case 'newest':
+          return sortedPosts.sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0));
+        case 'oldest':
+          return sortedPosts.sort((a, b) => new Date(a.createdAt || a.updatedAt || 0) - new Date(b.createdAt || b.updatedAt || 0));
+        case 'title':
+          return sortedPosts.sort((a, b) => {
+            const titleA = (a.title || '(제목 없음)').toLowerCase();
+            const titleB = (b.title || '(제목 없음)').toLowerCase();
+            return titleA.localeCompare(titleB);
+          });
+        case 'title-desc':
+          return sortedPosts.sort((a, b) => {
+            const titleA = (a.title || '(제목 없음)').toLowerCase();
+            const titleB = (b.title || '(제목 없음)').toLowerCase();
+            return titleB.localeCompare(titleA);
+          });
+        default:
+          return sortedPosts;
+      }
+    }
+
+    function handleWriteClick() {
+      const user = auth.currentUser;
+      if (user) {
+        window.location.href = `editor.html?group=${encodeURIComponent(group)}&item=${encodeURIComponent(item)}`;
+      } else {
+        loginForm.style.display = 'block';
+        loginForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        loginForm.style.display = 'none';
+        updateUserInfo();
+        floatingWriteBtn.classList.remove('disabled');
+        loadPosts();
+      } catch (error) {
+        const message = error.code === 'auth/invalid-login-credentials'
+          ? '로그인 실패: 이메일 또는 비밀번호가 맞지 않습니다. 비밀번호 재설정을 사용해 보세요.'
+          : '로그인 실패: ' + error.message;
+        showNotification(message, 'error');
+      }
+    }
+
+    async function resetPassword() {
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        showNotification('이메일을 입력한 뒤 비밀번호 재설정을 눌러 주세요.', 'warning');
+        return;
+      }
+      try {
+        await auth.sendPasswordResetEmail(email);
+        showNotification('비밀번호 재설정 이메일을 보냈습니다. 메일함을 확인해 주세요.', 'success');
+      } catch (error) {
+        showNotification('비밀번호 재설정 실패: ' + error.message, 'error');
+      }
+    }
+
+    async function signup() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      try {
+        await auth.createUserWithEmailAndPassword(email, password);
+        loginForm.style.display = 'none';
+        updateUserInfo();
+        floatingWriteBtn.classList.remove('disabled');
+        loadPosts();
+      } catch (error) { showNotification('회원가입 실패: ' + error.message, 'error'); }
+    }
+    async function logout() {
+      try {
+        await auth.signOut();
+        updateUserInfo();
+        floatingWriteBtn.classList.add('disabled');
+        loadPosts();
+      } catch (error) { console.error('로그아웃 실패:', error); }
+    }
+
+    function updateUserInfo() {
+      const user = auth.currentUser;
+      if (user) {
+        userInfo.style.display = 'block';
+        document.getElementById('userEmail').textContent = `안녕하세요, ${user.email}님!`;
+        floatingWriteBtn.classList.remove('disabled');
+      } else {
+        userInfo.style.display = 'none';
+        floatingWriteBtn.classList.add('disabled');
+      }
+    }
+
+    async function loadPosts() {
+      try {
+        const col = db.collection('public_posts');
+        const [qsItem, qsCategory] = await Promise.all([
+          col.where('publish', '==', true).where('group', '==', group).where('item', '==', item).get(),
+          col.where('publish', '==', true).where('group', '==', group).where('category', '==', item).get()
+        ]);
+
+        const seen = new Set();
+        const posts = [];
+        qsItem.forEach(doc => { seen.add(doc.id); posts.push({ id: doc.id, ...doc.data() }); });
+        qsCategory.forEach(doc => { if (!seen.has(doc.id)) posts.push({ id: doc.id, ...doc.data() }); });
+
+        currentPosts = posts;
+        const sorted = sortPosts(posts, 'newest');
+        saveLocalPosts(sorted);
+        displayPosts(currentPosts); // 전체 글 목록으로 displayPosts 호출
+      } catch (error) {
+        console.error('글 목록 불러오기 실패:', error);
+        displayPosts(getLocalPosts());
+      }
+    }
+
+    // 새로운 함수: 글 목록의 일부(배치)를 화면에 추가
+    function appendPosts(batch) {
+      const fragment = document.createDocumentFragment();
+      batch.forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'post';
+        el.innerHTML = `
+          <a href="viewer.html?id=${p.id}&group=${encodeURIComponent(p.group)}&item=${encodeURIComponent(p.item || p.category || '')}">${p.title || '(제목 없음)'}</a>
+          <div class="meta">${new Date(p.createdAt || p.updatedAt || Date.now()).toLocaleString()}</div>
+        `;
+        fragment.appendChild(el);
+      });
+      list.appendChild(fragment);
+    }
+
+    // 새로운 함수: 다음 글 배치를 로드하고 렌더링
+    function loadMorePosts() {
+      if (isLoadingMore || lastRenderedIndex >= postsToRender.length) {
+        return; // 로딩 중이거나 더 이상 글이 없으면 실행하지 않음
+      }
+      isLoadingMore = true;
+
+      const batch = postsToRender.slice(lastRenderedIndex, lastRenderedIndex + POSTS_PER_PAGE);
+      
+      if (batch.length > 0) {
+        appendPosts(batch);
+        lastRenderedIndex += batch.length;
+      }
+
+      isLoadingMore = false;
+    }
+
+    // 수정된 함수: 인피니트 스크롤을 설정하고 첫 배치를 렌더링
+    function displayPosts(posts) {
+      const filtered = posts.filter(p =>
+        p.publish !== false &&
+        String(p.group) === String(group) &&
+        (String(p.item) === String(item) || String(p.category) === String(item))
+      );
+      
+      const sorted = sortPosts(filtered, sortSelect.value);
+      postsToRender = sorted;
+
+      // 목록 초기화
+      list.innerHTML = '';
+      lastRenderedIndex = 0;
+
+      if (postsToRender.length === 0) {
+        list.innerHTML = '<p>작성된 글이 없습니다.</p>';
+      } else {
+        // 첫 번째 배치 로드
+        loadMorePosts();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. 캐시에서 글 목록 즉시 표시
+      const localPosts = getLocalPosts();
+      if (localPosts.length > 0) {
+        console.log('캐시에서 글 목록 표시');
+        currentPosts = localPosts;
+        displayPosts(currentPosts); // 캐시로 첫 화면 구성
+      } else {
+        list.innerHTML = '<div class="loading">글 목록을 불러오는 중...</div>';
+      }
+
+      floatingWriteBtn.classList.add('disabled');
+      // 2. Firebase에서 최신 데이터 가져오기 (백그라운드)
+      auth.onAuthStateChanged(() => { updateUserInfo(); loadPosts(); });
+      
+      // 정렬 변경 시: 목록을 다시 구성
+      sortSelect.addEventListener('change', () => {
+        displayPosts(currentPosts);
+      });
+
+      // 인피니트 스크롤 이벤트 리스너
+      window.addEventListener('scroll', () => {
+        // 페이지 끝에서 500px 전에 다음 글 로드
+        if (!isLoadingMore && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+          loadMorePosts();
+        }
+      });
+    });
+
+    (function initThemeToggle(){
+      const KEY = 'bol_theme';
+      const btn = document.getElementById('themeToggle');
+      function setTheme(t){
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem(KEY, t);
+        if (btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
+      }
+      function getTheme(){ return localStorage.getItem(KEY) || 'light'; } // 기본값 light
+      setTheme(getTheme());
+      if (btn) btn.onclick = () => setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+    })();
+  </script>
+</body>
+</html>

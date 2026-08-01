@@ -1,0 +1,529 @@
+<!-- viewer.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>글 보기</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    firebase.initializeApp(window.firebaseConfig);
+    const auth = firebase.auth();
+    auth.languageCode = 'ko';
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+  </script>
+
+  <style>
+    html, body { overflow-x:hidden; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
+      background:#f8fafc; color:#0f172a; max-width:720px; margin:2rem auto; padding:0 1rem; 
+    }
+    a { color:#2563eb; text-decoration:none; font-weight:bold; } a:hover{ text-decoration:underline; }
+    h1 { font-size:2rem; font-weight:bold; margin-bottom:0.5rem; }
+    .meta { color:#475569; font-size:0.9rem; margin-bottom:1.5rem; }
+
+    .content {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      font-size:1rem; line-height:1.6;
+      background:#ffffff; border:1px solid #e5e7eb; border-radius:8px;
+      padding:1rem; margin:1rem 0;
+      word-break:break-word; overflow-wrap:anywhere;
+      overflow-x:hidden;
+    }
+
+    /* 어떤 하위 요소도 부모 폭을 넘지 않도록 */
+    .content * { max-width:100% !important; box-sizing:border-box; }
+
+    .btn-purple { display:inline-block; background:#2563eb; color:#fff; font-weight:bold; font-size:0.95rem; border:none; border-radius:8px; padding:0.5rem 1.2rem; transition:.2s; box-shadow:0 2px 4px rgba(0,0,0,.15); margin:1rem 0; }
+    .btn-purple:hover { background:#3b82f6; }
+    .loading { text-align:center; padding:2rem; color:#64748b; }
+    .error { color:#ef4444; text-align:center; padding:2rem; }
+    .login-form{ background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:1rem; margin:1rem 0; }
+    .login-form input{ width:100%; padding:.5rem; margin:.5rem 0; background:#ffffff; border:1px solid #cbd5e1; color:#0f172a; border-radius:4px; }
+    .login-form button{ background:#2563eb; color:#fff; border:none; padding:.5rem 1rem; border-radius:4px; cursor:pointer; margin-right:.5rem; }
+    .user-info{ background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:1rem; margin:1rem 0; text-align:center; }
+    .logout-btn{ background:#ef4444; color:#fff; border:none; padding:.5rem 1rem; border-radius:4px; cursor:pointer; margin-left:1rem; }
+
+    /* 미디어 요소를 컨테이너에 맞춤 */
+    .content img,
+    .content video,
+    .content canvas,
+    .content iframe,
+    .content audio {
+      max-width:100% !important;
+      height:auto !important;
+      display:block;
+      border-radius:8px;
+      margin:1rem 0;
+      box-shadow:0 4px 12px rgba(0,0,0,.1);
+    }
+
+    /* 오디오 플레이어 스타일 */
+    .content audio {
+      width: 100%;
+      height: 50px;
+    }
+
+    /* 유튜브 임베드 컨테이너 */
+    .youtube-container {
+      position: relative !important;
+      width: 100% !important;
+      height: 500px !important;
+      margin: 1rem 0 !important;
+      max-width: 900px !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+    }
+
+    .youtube-container iframe {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      min-height: 400px !important;
+    }
+
+    /* 구글 드라이브 임베드 컨테이너 */
+    .google-drive-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      margin: 1rem 0;
+    }
+
+    .google-drive-container iframe {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    /* 미디어 링크 버튼 */
+    .media-link {
+      display: inline-block;
+      background: #2563eb;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      margin: 0.5rem 0;
+      font-weight: bold;
+    }
+
+    .media-link:hover {
+      background: #3b82f6;
+      text-decoration: none;
+    }
+
+    /* 표는 가로 스크롤 허용 */
+    .content table{
+      width:100% !important;
+      border-collapse:collapse;
+      display:block;
+      overflow-x:auto;
+    }
+    .content table, .content th, .content td { border:1px solid #e5e7eb; }
+    .content th, .content td { padding:6px; }
+
+    /* 코드/긴 링크 줄바꿈 */
+    .content pre { white-space:pre-wrap; word-break:break-word; }
+    .content code { word-break:break-word; }
+
+    /* 다크 모드 토글 버튼 */
+    .theme-btn {
+      position: fixed; top: 12px; right: 12px; z-index: 1200;
+      width: 42px; height: 42px; border-radius: 50%; border: none;
+      background: #e2e8f0; color: #0f172a; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+
+    /* 알림 시스템 */
+    .notification {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      z-index: 1300;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-weight: bold;
+      max-width: 300px;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+    }
+    
+    .notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .notification.success {
+      background: #10b981;
+      color: white;
+    }
+    
+    .notification.warning {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .notification.error {
+      background: #ef4444;
+      color: white;
+    }
+
+    /* 다크 모드 */
+    [data-theme="dark"] body { background:#121212; color:#e0e0e0; }
+    [data-theme="dark"] .content, [data-theme="dark"] .login-form, [data-theme="dark"] .user-info { background:#1e1e1e; border-color:#333; }
+    [data-theme="dark"] .meta { color:#999; }
+    [data-theme="dark"] .btn-purple { background:#3f51b5; }
+    [data-theme="dark"] .btn-purple:hover { background:#5c6bc0; }
+    [data-theme="dark"] .theme-btn { background:#334155; color:#fff; }
+    [data-theme="dark"] .media-link { background:#3f51b5; }
+    [data-theme="dark"] .media-link:hover { background:#5c6bc0; }
+    [data-theme="dark"] .youtube-container { border-color:#374151 !important; }
+  </style>
+</head>
+<body>
+  <button id="themeToggle" class="theme-btn" aria-label="Toggle theme">☀️</button>
+
+  <a id="backLink" class="btn-purple" href="#">← 목록으로</a>
+  <h1 id="title">제목</h1>
+  <div class="meta" id="meta"></div>
+
+  <div id="userInfo" class="user-info" style="display:none;">
+    <span id="userEmail"></span>
+    <button onclick="logout()" class="logout-btn">로그아웃</button>
+    <a id="editLink" class="btn-purple" style="display:none;" href="#">✏️ 수정하기</a>
+  </div>
+
+  <div id="content" class="content">
+    <div class="loading">글 내용을 불러오는 중...</div>
+  </div>
+
+  <div id="loginForm" class="login-form" style="display:none;">
+    <h3>로그인이 필요합니다</h3>
+    <input type="email" id="email" placeholder="admin@example.com">
+    <input type="password" id="password" placeholder="비밀번호">
+    <button onclick="login()">로그인</button>
+    <button onclick="signup()">회원가입</button>
+    <button onclick="resetPassword()" type="button">비밀번호 재설정</button>
+  </div>
+
+  <script>
+    // 알림 시스템
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // 애니메이션을 위한 delay
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+      
+      // 3초 후 자동 삭제
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    function qs(k){ const u=new URL(location.href); return u.searchParams.get(k); }
+    const id=qs('id'); const group=qs('group')||''; const item=qs('item')||'';
+    const loginForm=document.getElementById('loginForm'); const userInfo=document.getElementById('userInfo'); const editLink=document.getElementById('editLink');
+
+    function getLocalPosts(){ try{ return JSON.parse(localStorage.getItem('homepage_public_posts')||'[]'); }catch(e){ return []; } }
+
+    // 유튜브 URL에서 비디오 ID 추출
+    function getYouTubeVideoId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    // Firebase Storage에서 이미지 URL 생성
+    async function getImageUrl(imagePath) {
+      try {
+        const imageRef = storage.ref().child(imagePath);
+        const url = await imageRef.getDownloadURL();
+        return url;
+      } catch (error) {
+        console.error('이미지 URL 생성 실패:', error);
+        return null;
+      }
+    }
+
+
+
+    // 미디어 링크 처리
+    async function processMediaLinks(content) {
+      console.log('processMediaLinks 호출됨, 원본 내용:', content);
+      
+      // 사파리 호환성을 위한 안전한 처리
+      if (!content || typeof content !== 'string') {
+        console.warn('processMediaLinks: 유효하지 않은 콘텐츠');
+        return content || '';
+      }
+      
+      try {
+        // 구글 드라이브 링크 처리
+        content = content.replace(
+          /https?:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9-_]+)/g,
+          (match, fileId) => {
+            return `<div class="google-drive-container"><iframe src="https://drive.google.com/file/d/${fileId}/preview" width="100%" height="400" frameborder="0"></iframe></div>`;
+          }
+        );
+
+        // 유튜브 링크 처리
+        content = content.replace(
+          /https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g,
+          (match, www, prefix, videoId) => {
+            console.log('유튜브 링크 발견:', match, '비디오 ID:', videoId);
+            const youtubeHTML = `<div class="youtube-container" style="position: relative; width: 100%; height: 500px; margin: 1rem 0; max-width: 900px; border: 2px solid #e5e7eb; border-radius: 8px; overflow: hidden;"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px; cursor: pointer;" src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>`;
+            console.log('생성된 유튜브 HTML:', youtubeHTML);
+            return youtubeHTML;
+          }
+        );
+
+        // 오디오 파일 링크 처리 (.m4a, .mp3, .wav, .ogg)
+        content = content.replace(
+          /https?:\/\/[^\s]+\.(m4a|mp3|wav|ogg)(\?[^\s]*)?/gi,
+          '<audio controls><source src="$&" type="audio/$1">브라우저가 오디오 재생을 지원하지 않습니다.</audio>'
+        );
+
+        // 비디오 파일 링크 처리 (.mp4, .webm, .ogg)
+        content = content.replace(
+          /https?:\/\/[^\s]+\.(mp4|webm|ogg)(\?[^\s]*)?/gi,
+          '<video controls width="100%"><source src="$&" type="video/$1">브라우저가 비디오 재생을 지원하지 않습니다.</video>'
+        );
+
+        // 이미지 파일 링크 처리 (사파리 호환성을 위해 lookbehind 제거)
+        content = content.replace(
+          /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp)(\?[^\s]*)?)/gi,
+          (match, url) => {
+            // 이미 img 태그 안에 있는지 간단하게 체크
+            if (content.indexOf('<img') !== -1 && content.indexOf(url) > content.lastIndexOf('<img', content.indexOf(url))) {
+              return match; // 이미 img 태그 안에 있으면 그대로 반환
+            }
+            return `<img src="${url}" alt="이미지" style="max-width:100%; height:auto;">`;
+          }
+        );
+
+        return content;
+      } catch (error) {
+        console.error('processMediaLinks 처리 중 오류:', error);
+        return content; // 오류 발생 시 원본 반환
+      }
+    }
+
+    async function login(){ const email=document.getElementById('email').value; const password=document.getElementById('password').value;
+      try{ await auth.signInWithEmailAndPassword(email,password); loginForm.style.display='none'; updateUserInfo(); editLink.style.display='inline-block'; loadPost(); }
+      catch(err){
+        const message = err.code === 'auth/invalid-login-credentials'
+          ? '로그인 실패: 이메일 또는 비밀번호가 맞지 않습니다. 비밀번호 재설정을 사용해 보세요.'
+          : '로그인 실패: '+err.message;
+        showNotification(message, 'error');
+      } }
+    async function resetPassword(){ const email=document.getElementById('email').value.trim();
+      if(!email){ showNotification('이메일을 입력한 뒤 비밀번호 재설정을 눌러 주세요.', 'warning'); return; }
+      try{ await auth.sendPasswordResetEmail(email); showNotification('비밀번호 재설정 이메일을 보냈습니다. 메일함을 확인해 주세요.', 'success'); }
+      catch(err){ showNotification('비밀번호 재설정 실패: '+err.message, 'error'); } }
+    async function signup(){ const email=document.getElementById('email').value; const password=document.getElementById('password').value;
+      try{ await auth.createUserWithEmailAndPassword(email,password); loginForm.style.display='none'; updateUserInfo(); editLink.style.display='inline-block'; loadPost(); }
+      catch(err){ showNotification('회원가입 실패: '+err.message, 'error'); } }
+    async function logout(){ try{ await auth.signOut(); updateUserInfo(); editLink.style.display='none'; } catch(e){ console.error(e); } }
+
+    function updateUserInfo(){ const user=auth.currentUser;
+      if(user){ userInfo.style.display='block'; document.getElementById('userEmail').textContent=`안녕하세요, ${user.email}님!`; editLink.style.display='inline-block'; editLink.href=`editor.html?id=${id}&group=${group}&item=${item}`; }
+      else{ userInfo.style.display='none'; editLink.style.display='none'; }
+    }
+
+    async function loadPost(){
+      console.log('loadPost 시작, id:', id);
+      
+      // 로딩 상태 표시
+      document.getElementById('content').innerHTML = '<div class="loading">글 내용을 불러오는 중...</div>';
+
+      try{
+        // 사파리에서 문제가 되는 Promise.race 제거하고 단순한 방식 사용
+        console.log('공개 포스트에서 검색 중...');
+        const pubSnap = await db.collection('public_posts').doc(id).get();
+        if(pubSnap.exists){ 
+          console.log('공개 포스트 발견');
+          await displayPost(pubSnap.data()); 
+          return; 
+        }
+        
+        const user = auth.currentUser;
+        if(user){
+          console.log('사용자 포스트에서 검색 중...');
+          const docSnap = await db.collection('users').doc(user.uid).collection('posts').doc(id).get();
+          if(docSnap.exists){ 
+            console.log('사용자 포스트 발견');
+            await displayPost(docSnap.data()); 
+            return; 
+          }
+        }
+        
+        console.log('포스트를 찾을 수 없음, 로컬 스토리지에서 검색');
+        loadFromLocalStorage();
+      }catch(e){ 
+        console.error('글 불러오기 실패:',e); 
+        showNotification('글을 불러오는 중 오류가 발생했습니다.', 'error');
+        document.getElementById('content').innerHTML = `
+          <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 1rem; border-radius: 8px; color: #dc2626;">
+            <h3>⚠️ 네트워크 오류</h3>
+            <p>서버와 연결하는 중 문제가 발생했습니다. 인터넷 연결을 확인해주세요.</p>
+            <details style="margin-top: 8px;">
+              <summary style="cursor: pointer; font-weight: bold;">기술적 세부사항</summary>
+              <code style="display: block; margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px;">${e.message}</code>
+            </details>
+            <div style="margin-top: 16px;">
+              <a href="javascript:location.reload()" style="background: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-right: 8px;">🔄 새로고침</a>
+              <a href="index.html" style="background: #6b7280; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">🏠 홈으로</a>
+            </div>
+          </div>
+        `;
+      }
+    }
+    function loadFromLocalStorage(){ 
+      const p=getLocalPosts().find(p=>p.id===id); 
+      if(p) {
+        displayPost(p);
+      } else {
+        showNotification('글을 찾을 수 없습니다.', 'error');
+        document.getElementById('content').innerHTML = `
+          <div style="background: #f0f9ff; border: 1px solid #7dd3fc; padding: 1rem; border-radius: 8px; color: #0c4a6e;">
+            <h3>🔍 글을 찾을 수 없습니다</h3>
+            <p>요청하신 글이 존재하지 않거나 삭제되었을 수 있습니다.</p>
+            <div style="margin-top: 16px;">
+              <a href="javascript:history.back()" style="background: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-right: 8px;">← 뒤로가기</a>
+              <a href="index.html" style="background: #6b7280; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">🏠 홈으로</a>
+            </div>
+          </div>
+        `;
+      }
+    }
+    async function displayPost(post){
+      try {
+        console.log('displayPost 시작, post 제목:', post.title);
+        
+        document.getElementById('title').textContent = post.title || '(제목 없음)';
+        const d = post.updatedAt || post.createdAt; 
+        document.getElementById('meta').textContent = `수정됨: ${d ? new Date(d).toLocaleString('ko-KR') : '날짜 없음'}`;
+        
+        let content = post.content || '';
+
+        if (!content && post.contentUrl) {
+          console.log('Storage에서 콘텐츠 로드:', post.contentUrl);
+          try {
+            const response = await fetch(post.contentUrl);
+            if (!response.ok) throw new Error('HTTP error ' + response.status);
+            content = await response.text();
+            console.log('로드된 콘텐츠 길이:', content.length);
+          } catch (error) {
+            console.error('Storage 로드 실패:', error);
+            content = `
+              <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 1rem; border-radius: 8px; color: #856404;">
+                <h3>⚠️ 콘텐츠 로드 실패</h3>
+                <p>콘텐츠를 불러올 수 없습니다. 다시 시도해주세요.</p>
+                <p><a href="javascript:location.reload()" style="color: #2563eb;">🔄 새로고침</a></p>
+              </div>
+            `;
+          }
+        }
+        
+        console.log('콘텐츠 길이:', content ? content.length : 0);
+        
+        // 사파리 호환성을 위한 안전한 처리
+        if (!content || content.length <= 0) {
+          showNotification('콘텐츠가 비어있습니다.', 'warning');
+          document.getElementById('content').innerHTML = `
+            <div style="background: #f0f9ff; border: 1px solid #7dd3fc; padding: 1rem; border-radius: 8px; color: #0c4a6e;">
+              <h3>📝 콘텐츠가 없습니다</h3>
+              <p>이 글에는 아직 내용이 없습니다.</p>
+              <div style="margin-top: 16px;">
+                <a href="editor.html?id=${post.id}&group=${post.group}&item=${post.category}" style="background: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-right: 8px;">✏️ 글 작성하기</a>
+                <a href="javascript:history.back()" style="background: #6b7280; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">← 뒤로가기</a>
+              </div>
+            </div>
+          `;
+          return;
+        }
+        
+        // 성능 향상을 위해 이미지와 iframe에 lazy loading 적용
+        let processedContent = content;
+        processedContent = processedContent.replace(/<img /g, '<img loading="lazy" ');
+        processedContent = processedContent.replace(/<iframe /g, '<iframe loading="lazy" ');
+
+        console.log('콘텐츠 직접 표시');
+        document.getElementById('content').innerHTML = processedContent;
+        
+      } catch (error) {
+        console.error('displayPost 실패:', error);
+        showNotification('글 표시 중 오류가 발생했습니다.', 'error');
+        document.getElementById('content').innerHTML = `
+          <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 1rem; border-radius: 8px; color: #dc2626;">
+            <h3>⚠️ 글을 표시할 수 없습니다</h3>
+            <p>죄송합니다. 글을 불러오는 중 문제가 발생했습니다.</p>
+            <details style="margin-top: 8px;">
+              <summary style="cursor: pointer; font-weight: bold;">기술적 세부사항</summary>
+              <code style="display: block; margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px;">${error.message}</code>
+            </details>
+            <div style="margin-top: 16px;">
+              <a href="javascript:location.reload()" style="background: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-right: 8px;">🔄 새로고침</a>
+              <a href="index.html" style="background: #6b7280; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">🏠 홈으로</a>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      // 1. 로컬 스토리지에서 즉시 표시 (캐시) - 오류 없이 조용히 시도
+      const postFromCache = getLocalPosts().find(p => p.id === id);
+      if (postFromCache) {
+        console.log('캐시에서 글 표시');
+        displayPost(postFromCache);
+      }
+
+      // 2. Firebase에서 최신 데이터 가져오기 (백그라운드)
+      auth.onAuthStateChanged(()=>{ updateUserInfo(); loadPost(); });
+      
+      const back=document.getElementById('backLink');
+      back.href=(group&&item)?`board.html?group=${encodeURIComponent(group)}&item=${encodeURIComponent(item)}`:'index.html';
+    });
+
+    (function initThemeToggle(){
+      const KEY = 'bol_theme';
+      const btn = document.getElementById('themeToggle');
+      function setTheme(t){
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem(KEY, t);
+        if (btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
+      }
+      function getTheme(){ return localStorage.getItem(KEY) || 'light'; }
+      setTheme(getTheme());
+      if (btn) btn.onclick = () => setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+    })();
+  </script>
+</body>
+</html>

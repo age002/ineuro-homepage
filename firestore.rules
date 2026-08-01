@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // ADMIN_SETUP.md의 방법으로 /admins/{UID} 문서를 만든 사용자만 관리자입니다.
+    function isAdmin() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      // 최초 관리자 문서는 Firebase Console에서 직접 만듭니다.
+      allow write: if false;
+    }
+
+    match /public_posts/{postId} {
+      allow read: if resource.data.publish == true;
+      allow create: if isAdmin() && request.resource.data.authorUid == request.auth.uid;
+      allow update, delete: if isAdmin() && resource.data.authorUid == request.auth.uid;
+    }
+
+    match /users/{userId}/posts/{postId} {
+      allow read, write: if signedIn() && request.auth.uid == userId && isAdmin();
+    }
+  }
+}

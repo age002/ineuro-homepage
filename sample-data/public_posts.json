@@ -1,0 +1,16 @@
+[
+  {
+    "id": "welcome-post",
+    "authorUid": "ADMIN_UID",
+    "uid": "ADMIN_UID",
+    "title": "샘플 게시글",
+    "group": "Research",
+    "category": "Notice",
+    "item": "Notice",
+    "publish": true,
+    "content": "<p>새 Firebase 프로젝트 연결을 확인하기 위한 예시 글입니다.</p>",
+    "plain": "새 Firebase 프로젝트 연결을 확인하기 위한 예시 글입니다.",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  }
+]

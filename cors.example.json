@@ -1,0 +1,7 @@
+[
+  {
+    "origin": ["https://YOUR_GITHUB_USERNAME.github.io", "https://your-domain.example"],
+    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "maxAgeSeconds": 3600
+  }
+]

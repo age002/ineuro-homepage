@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - Brainok's lab</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    firebase.initializeApp(window.firebaseConfig);
+    const auth = firebase.auth();
+    auth.languageCode = 'ko';
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+  </script>
+
+  <style>
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background:#f8fafc; color:#0f172a; max-width:720px; margin:2rem auto; padding:0 1rem; 
+    }
+    
+    .btn-purple { 
+      display:inline-block; background:#2563eb; color:#fff; font-weight:bold; font-size:0.95rem; 
+      border:none; border-radius:8px; padding:0.5rem 1.2rem; transition:.2s; 
+      box-shadow:0 2px 4px rgba(0,0,0,.15); margin:1rem 0; text-decoration:none; cursor:pointer;
+    }
+    .btn-purple:hover { background:#3b82f6; text-decoration:none; color:#fff; }
+    
+    .btn-secondary {
+      background:#6b7280; margin-left:10px;
+    }
+    .btn-secondary:hover { background:#4b5563; }
+    
+    h1 { font-size:2rem; font-weight:bold; margin-bottom:0.5rem; }
+    .meta { color:#475569; font-size:0.9rem; margin-bottom:1.5rem; }
+
+    .content {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      font-size:1rem; line-height:1.6;
+      background:#ffffff; border:1px solid #e5e7eb; border-radius:8px;
+      padding:1rem; margin:1rem 0;
+      word-break:break-word; overflow-wrap:anywhere;
+      overflow-x:hidden;
+    }
+
+    .content * { max-width:100% !important; box-sizing:border-box; }
+    
+    .loading { text-align:center; padding:2rem; color:#64748b; }
+    .error { color:#ef4444; text-align:center; padding:2rem; }
+    .login-form{ background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:1rem; margin:1rem 0; }
+    .login-form input{ width:100%; padding:.5rem; margin:.5rem 0; background:#ffffff; border:1px solid #cbd5e1; color:#0f172a; border-radius:4px; }
+    .login-form button{ background:#2563eb; color:#fff; border:none; padding:.5rem 1rem; border-radius:4px; cursor:pointer; margin-right:.5rem; }
+    .user-info{ background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:1rem; margin:1rem 0; text-align:center; }
+    
+    .edit-section { 
+      background:#f8fafc; border:1px solid #e5e7eb; border-radius:8px; padding:1rem; margin:1rem 0; 
+      display:none;
+    }
+    
+    .theme-btn {
+      position: fixed; top: 12px; right: 12px; z-index: 1200;
+      width: 42px; height: 42px; border-radius: 50%; border: none;
+      background: #e2e8f0; color: #0f172a; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+
+    [data-theme="dark"] body { background:#121212; color:#e0e0e0; }
+    [data-theme="dark"] .content, [data-theme="dark"] .login-form, [data-theme="dark"] .user-info, [data-theme="dark"] .edit-section { background:#1e1e1e; border-color:#333; }
+    [data-theme="dark"] .meta { color:#999; }
+    [data-theme="dark"] .btn-purple { background:#3f51b5; }
+    [data-theme="dark"] .btn-purple:hover { background:#5c6bc0; }
+    [data-theme="dark"] .theme-btn { background:#334155; color:#fff; }
+  </style>
+</head>
+<body>
+  <button id="themeToggle" class="theme-btn" aria-label="Toggle theme">☀️</button>
+  
+  <a class="btn-purple" href="index.html">← 홈으로 돌아가기</a>
+  <h1>About</h1>
+  <div class="meta" id="meta">연구실 소개 페이지</div>
+
+  <div id="userInfo" class="user-info" style="display:none;">
+    <span id="userEmail"></span>
+    <button onclick="logout()" class="btn-secondary">로그아웃</button>
+    <button onclick="toggleEdit()" class="btn-purple" id="editBtn">✏️ 수정하기</button>
+  </div>
+
+  <div id="content" class="content">
+    <div class="loading">내용을 불러오는 중...</div>
+  </div>
+
+  <div id="loginForm" class="login-form" style="display:none;">
+    <h3>로그인이 필요합니다</h3>
+    <input type="email" id="email" placeholder="admin@example.com">
+    <input type="password" id="password" placeholder="비밀번호">
+    <button onclick="login()">로그인</button>
+    <button onclick="resetPassword()" type="button">비밀번호 재설정</button>
+  </div>
+
+  <div id="editSection" class="edit-section">
+    <h3>About 페이지 수정</h3>
+    <div style="margin:0.5rem 0;">
+      <textarea id="editContent" placeholder="연구실 소개 내용을 입력해주세요..."></textarea>
+    </div>
+    <button onclick="saveContent()" class="btn-purple">저장</button>
+    <button onclick="cancelEdit()" class="btn-secondary">취소</button>
+  </div>
+
+  <script>
+    const ABOUT_DOC_ID = 'about_page'; // 고정된 문서 ID
+    let currentUID = null;
+
+    // TinyMCE 에디터 초기화
+    async function initTinyMCE() {
+      if (typeof tinymce !== 'undefined') {
+        try { tinymce.remove(); } catch (_) {}
+      }
+
+      const theme = (localStorage.getItem('bol_theme') || 'light');
+      const isDark = theme === 'dark';
+
+      await tinymce.init({
+        selector: '#editContent',
+        base_url: "https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3",
+        suffix: '.min',
+        menubar: false,
+        branding: false,
+        skin: isDark ? 'oxide-dark' : 'oxide',
+        content_css: isDark ? 'dark' : 'default',
+        height: '400px',
+        placeholder: '연구실 소개 내용을 입력해주세요...',
+        plugins: 'lists link image table code codesample',
+        toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image table | removeformat | code',
+        content_style:
+          'img,video,iframe{max-width:100%;height:auto} ' +
+          'img{max-width:720px} ' +
+          'table{width:100%;border-collapse:collapse;display:block;overflow-x:auto} ' +
+          'table,th,td{border:1px solid #334155} th,td{padding:6px} ' +
+          'pre,code{white-space:pre-wrap;word-break:break-word} ' +
+          'p,li,blockquote,td,th{overflow-wrap:anywhere;word-break:break-word} ' +
+          '.mce-content-body{line-height:1.7}',
+        paste_data_images: false,
+        automatic_uploads: false,
+        // Firebase Storage로 이미지 업로드
+        images_upload_handler: (blobInfo) => new Promise(async (resolve, reject) => {
+          try {
+            console.log('이미지 업로드 시작:', blobInfo.filename());
+            
+            if (!currentUID) {
+              console.error('사용자 ID가 없습니다.');
+              reject(new Error('로그인이 필요합니다.'));
+              return;
+            }
+            
+            const fileBlob = blobInfo.blob();
+            console.log('파일 블롭 크기:', fileBlob.size, '타입:', fileBlob.type);
+            
+            const ext = (blobInfo.filename() || 'image').split('.').pop() || 'png';
+            const path = `images/${currentUID}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+            console.log('저장 경로:', path);
+            
+            const storageRef = storage.ref().child(path);
+            const snapshot = await storageRef.put(fileBlob, { contentType: fileBlob.type || 'image/png' });
+            console.log('업로드 완료:', snapshot);
+            
+            const url = await snapshot.ref.getDownloadURL();
+            console.log('다운로드 URL:', url);
+            
+            if (!url || url.includes('undefined')) {
+              throw new Error('유효하지 않은 URL이 생성되었습니다.');
+            }
+            
+            console.log('이미지 URL 반환:', url);
+            resolve(url);
+            
+          } catch (err) { 
+            console.error('이미지 업로드 실패:', err);
+            reject(err); 
+          }
+        }),
+      });
+    }
+
+    async function login(){ 
+      const email=document.getElementById('email').value; 
+      const password=document.getElementById('password').value;
+      try{ 
+        await auth.signInWithEmailAndPassword(email,password); 
+        document.getElementById('loginForm').style.display='none'; 
+        updateUserInfo(); 
+        loadContent(); 
+      } catch(err){ 
+        const message = err.code === 'auth/invalid-login-credentials'
+          ? '로그인 실패: 이메일 또는 비밀번호가 맞지 않습니다. 비밀번호 재설정을 사용해 보세요.'
+          : '로그인 실패: '+err.message;
+        alert(message);
+      } 
+    }
+
+    async function resetPassword(){
+      const email=document.getElementById('email').value.trim();
+      if(!email){
+        alert('이메일을 입력한 뒤 비밀번호 재설정을 눌러 주세요.');
+        return;
+      }
+      try{
+        await auth.sendPasswordResetEmail(email);
+        alert('비밀번호 재설정 이메일을 보냈습니다. 메일함을 확인해 주세요.');
+      } catch(err){
+        alert('비밀번호 재설정 실패: '+err.message);
+      }
+    }
+
+    async function logout(){ 
+      try{ 
+        await auth.signOut(); 
+        updateUserInfo(); 
+      } catch(e){ 
+        console.error(e); 
+      } 
+    }
+
+    function updateUserInfo(){ 
+      const user=auth.currentUser;
+      currentUID = user ? user.uid : null;
+      
+      if(user){ 
+        document.getElementById('userInfo').style.display='block'; 
+        document.getElementById('userEmail').textContent=`안녕하세요, ${user.email}님!`; 
+        document.getElementById('loginForm').style.display='none';
+      } else{ 
+        document.getElementById('userInfo').style.display='none'; 
+        document.getElementById('loginForm').style.display='block';
+      }
+    }
+
+    async function loadContent(){
+      try{
+        console.log('About 페이지 로딩 중...');
+        
+        // 현재 사용자의 posts 컬렉션에서 About 페이지 찾기
+        const user = auth.currentUser;
+        if (user) {
+          const aboutQuery = await db.collection('users').doc(user.uid).collection('posts')
+            .where('title', '==', 'About')
+            .where('group', '==', 'Research')
+            .where('category', '==', 'About')
+            .limit(1).get();
+            
+                  if (!aboutQuery.empty) {
+          const data = aboutQuery.docs[0].data();
+          console.log('About 페이지 발견:', data.title);
+          
+          // 항상 Firestore의 content 필드만 사용
+          const content = data.content || '';
+          console.log('로드된 콘텐츠 길이:', content.length);
+          
+          document.getElementById('content').innerHTML = content || '<p>아직 작성된 내용이 없습니다.</p>';
+          document.getElementById('meta').textContent = `마지막 수정: ${data.updatedAt ? new Date(data.updatedAt).toLocaleString('ko-KR') : '날짜 없음'}`;
+          return;
+        }
+        }
+        
+        // public_posts에서도 찾기
+        const publicQuery = await db.collection('public_posts')
+          .where('publish', '==', true)
+          .where('title', '==', 'About')
+          .where('group', '==', 'Research')
+          .where('category', '==', 'About')
+          .limit(1).get();
+          
+        if (!publicQuery.empty) {
+          const data = publicQuery.docs[0].data();
+          console.log('공개 About 페이지 발견:', data.title);
+          
+          // 항상 Firestore의 content 필드만 사용
+          const content = data.content || '';
+          console.log('공개 로드된 콘텐츠 길이:', content.length);
+          
+          document.getElementById('content').innerHTML = content || '<p>아직 작성된 내용이 없습니다.</p>';
+          document.getElementById('meta').textContent = `마지막 수정: ${data.updatedAt ? new Date(data.updatedAt).toLocaleString('ko-KR') : '날짜 없음'}`;
+        } else {
+          console.log('About 페이지가 존재하지 않음');
+          document.getElementById('content').innerHTML = '<p>아직 작성된 내용이 없습니다.</p>';
+        }
+      } catch(e) {
+        console.error('About 페이지 로딩 실패:', e);
+        document.getElementById('content').innerHTML = '<div class="error">페이지를 불러올 수 없습니다.</div>';
+      }
+    }
+
+    async function toggleEdit() {
+      const editSection = document.getElementById('editSection');
+      const isVisible = editSection.style.display !== 'none';
+      
+      if (isVisible) {
+        // 편집 모드 종료
+        if (tinymce.activeEditor) {
+          tinymce.remove();
+        }
+        editSection.style.display = 'none';
+      } else {
+        // 편집 모드 시작
+        editSection.style.display = 'block';
+        await initTinyMCE();
+        await loadCurrentContent();
+      }
+    }
+
+    async function loadCurrentContent() {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        
+        // 현재 사용자의 posts에서 About 페이지 찾기
+        const aboutQuery = await db.collection('users').doc(user.uid).collection('posts')
+          .where('title', '==', 'About')
+          .where('group', '==', 'Research')
+          .where('category', '==', 'About')
+          .limit(1).get();
+          
+        if (!aboutQuery.empty && tinymce.activeEditor) {
+          const data = aboutQuery.docs[0].data();
+          
+          // 항상 Firestore의 content 필드만 사용
+          const content = data.content || '';
+          console.log('편집용 콘텐츠 로드, 길이:', content.length);
+          
+          tinymce.activeEditor.setContent(content);
+        } else if (tinymce.activeEditor) {
+          tinymce.activeEditor.setContent('');
+        }
+      } catch(e) {
+        console.error('현재 내용 로드 실패:', e);
+      }
+    }
+
+    // base64 이미지를 Storage로 올리고 본문 내 src를 모두 URL로 교체
+    async function normalizeImagesInEditor(editor){
+      if (!currentUID) {
+        console.warn('사용자 ID가 없어서 이미지 정규화를 건너뜁니다.');
+        return;
+      }
+      
+      const images = editor.dom.select('img');
+      console.log('정규화할 이미지 개수:', images.length);
+      
+      for (const img of images) {
+        const src = img.getAttribute('src') || '';
+        if (src.startsWith('data:')) {
+          try {
+            console.log('base64 이미지 발견, 업로드 시작...');
+            const blob = await (await fetch(src)).blob();
+            const ext = (blob.type && blob.type.split('/')[1]) || 'png';
+            const path = `images/${currentUID}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+            const storageRef = storage.ref().child(path);
+            const snapshot = await storageRef.put(blob, { contentType: blob.type || 'image/png' });
+            const url = await snapshot.ref.getDownloadURL();
+            img.setAttribute('src', url);
+            console.log('이미지 정규화 완료:', url);
+          } catch (e) {
+            console.error('이미지 업로드 실패:', e);
+          }
+        }
+      }
+    }
+
+    async function saveContent() {
+      const user = auth.currentUser;
+      if (!user) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const editor = tinymce.activeEditor;
+      if (!editor) {
+        alert('에디터가 준비되지 않았습니다.');
+        return;
+      }
+
+      // 저장 전에 base64 이미지를 모두 Storage URL로 바꾼다
+      await normalizeImagesInEditor(editor);
+
+      const content = editor.getContent();
+      const now = new Date().toISOString();
+
+      try {
+        // 기존 About 페이지가 있는지 확인
+        const aboutQuery = await db.collection('users').doc(user.uid).collection('posts')
+          .where('title', '==', 'About')
+          .where('group', '==', 'Research')
+          .where('category', '==', 'About')
+          .limit(1).get();
+
+        let postId;
+        let isUpdate = false;
+        
+        if (!aboutQuery.empty) {
+          // 기존 글 업데이트
+          postId = aboutQuery.docs[0].id;
+          isUpdate = true;
+        } else {
+          // 새 글 생성
+          postId = 'about_' + Date.now().toString();
+        }
+
+        // 콘텐츠 크기 체크
+        function getUtf8BytesLength(str){
+          return new TextEncoder().encode(str).length;
+        }
+        
+        const contentBytes = content ? getUtf8BytesLength(content) : 0;
+        console.log('저장 전 콘텐츠 크기:', contentBytes, 'bytes');
+
+        const payload = {
+          id: postId,
+          uid: user.uid,
+          title: 'About',
+          group: 'Research',
+          category: 'About',
+          item: 'About',
+          publish: true,
+          content: content,
+          plain: editor.getContent({ format: 'text' }).slice(0, 200),
+          updatedAt: now
+        };
+
+        if (!isUpdate) {
+          payload.createdAt = now;
+        }
+
+        // About 페이지는 항상 Firestore에 저장 (Storage 사용 안 함)
+        // 대용량 콘텐츠는 크기 제한
+        if (payload.content && contentBytes > 1000000) {
+          console.log('콘텐츠가 1MB를 초과합니다. 크기를 줄입니다.');
+          alert('콘텐츠가 너무 큽니다. 일부만 저장됩니다.');
+          payload.content = payload.content.substring(0, 900000);
+        }
+        
+        // contentUrl은 사용하지 않음 (항상 삭제)
+        delete payload.contentUrl;
+
+        // 사용자 컬렉션에 저장
+        await db.collection('users').doc(user.uid).collection('posts').doc(postId).set(payload);
+        
+        // 공개 컬렉션에도 저장
+        await db.collection('public_posts').doc(postId).set({ 
+          ...payload, 
+          authorUid: user.uid, 
+          publish: true 
+        });
+
+        alert('저장되었습니다!');
+        
+        // 편집 모드 종료
+        tinymce.remove();
+        document.getElementById('editSection').style.display = 'none';
+        loadContent(); // 페이지 새로고침
+      } catch(e) {
+        console.error('저장 실패:', e);
+        alert('저장 중 오류가 발생했습니다: ' + e.message);
+      }
+    }
+
+    function cancelEdit() {
+      if (tinymce.activeEditor) {
+        tinymce.remove();
+      }
+      document.getElementById('editSection').style.display = 'none';
+    }
+
+    // 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      auth.onAuthStateChanged((user) => {
+        updateUserInfo();
+        loadContent();
+      });
+    });
+
+    // 다크모드 토글
+    (function initThemeToggle(){
+      const KEY = 'bol_theme';
+      const btn = document.getElementById('themeToggle');
+      function setTheme(t){
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem(KEY, t);
+        if (btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
+      }
+      function getTheme(){ return localStorage.getItem(KEY) || 'light'; }
+      setTheme(getTheme());
+      if (btn) btn.onclick = () => setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+    })();
+  </script>
+</body>
+</html>

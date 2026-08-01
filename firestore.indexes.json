@@ -1,0 +1,42 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "public_posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "publish", "order": "ASCENDING" },
+        { "fieldPath": "group", "order": "ASCENDING" },
+        { "fieldPath": "item", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "public_posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "publish", "order": "ASCENDING" },
+        { "fieldPath": "group", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "public_posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "publish", "order": "ASCENDING" },
+        { "fieldPath": "title", "order": "ASCENDING" },
+        { "fieldPath": "group", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "title", "order": "ASCENDING" },
+        { "fieldPath": "group", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
