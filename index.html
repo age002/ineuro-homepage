@@ -7,16 +7,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Favicon / iOS icons (모두 루트(/)에 파일 배치) -->
-  <link rel="icon" href="assets/brain-gardening.svg" type="image/svg+xml">
+  <link rel="icon" href="brain.svg" type="image/svg+xml">
   <link rel="icon" href="favicon-32x32.png" sizes="32x32" type="image/png">
   <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
   <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png" sizes="180x180">
   <meta name="apple-mobile-web-app-title" content="Brain Gardening">
-  <meta name="theme-color" content="#5a3d62">
+  <meta name="theme-color" content="#f5f6f8">
 
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap");
 
     html {
       scroll-behavior: smooth;
@@ -24,43 +24,20 @@
 
     body {
       font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      background: #e8e0e7;
+      background: #f5f6f8;
       letter-spacing: 0;
     }
 
-    /* Brain Gardening — vintage purple, warm gray, and restrained gold */
-    body { color: #302a33; }
-    header {
-      background: linear-gradient(135deg, #351f42 0%, #5a3d62 70%, #6d4b70 100%) !important;
-      border: 1px solid rgba(176, 138, 74, 0.55);
-      border-radius: 22px;
-      box-shadow: 0 18px 40px rgba(53, 31, 66, 0.22);
-    }
-    article, section.bg-white { background: #fcfaf8 !important; }
-    article { border: 1px solid #cbbdca; border-radius: 18px; box-shadow: 0 12px 30px rgba(67, 43, 74, 0.1); }
     .brand-wordmark {
-      color: #fff8ec !important;
-      font-family: "DM Serif Display", Georgia, serif;
-      font-size: clamp(2.2rem, 5vw, 3.4rem);
-      font-weight: 400;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: clamp(2.35rem, 5vw, 3.45rem);
+      font-weight: 600;
       letter-spacing: -0.035em;
-      line-height: 1;
+      line-height: 0.9;
     }
-    .logo-frame {
-      background: rgba(255, 248, 236, 0.96) !important;
-      border: 1px solid rgba(176, 138, 74, 0.72);
-      box-shadow: 0 8px 20px rgba(23, 12, 29, 0.2);
-    }
-    .section-title { color: #472852 !important; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; letter-spacing: -0.02em; }
-    .text-black, .text-slate-950 { color: #302a33 !important; }
-    .text-slate-500, .text-slate-600 { color: #857b88 !important; }
-    .nav-card { background: #f4eaf2 !important; border-color: #cbb5c8 !important; border-radius: 14px; box-shadow: 0 5px 14px rgba(67, 43, 74, 0.06); }
-    .nav-card:hover { background: #fffaf7 !important; border-color: #b08a4a !important; box-shadow: 0 12px 24px rgba(67, 43, 74, 0.14); }
-    .nav-icon.bg-sky-100, .nav-icon.bg-orange-100 { background: #d8c1d8 !important; box-shadow: inset 0 0 0 1px rgba(90, 61, 98, 0.18); }
-    .nav-icon.text-sky-700, .nav-icon.text-orange-700 { color: #472852 !important; }
 
     .page-link:focus-visible {
-      outline: 3px solid rgba(176, 138, 74, 0.7);
+      outline: 3px solid rgba(6, 182, 212, 0.45);
       outline-offset: 3px;
     }
 
@@ -105,8 +82,8 @@
       <header class="mb-8 bg-white px-5 py-5 shadow-sm sm:px-8">
         <div class="flex items-center">
           <a href="index.html" class="page-link flex items-center gap-4 rounded-lg">
-            <span class="logo-frame flex h-16 w-16 items-center justify-center rounded-2xl bg-white">
-              <img src="assets/brain-gardening.svg" alt="Brain Gardening logo" class="h-14 w-14">
+            <span class="flex h-16 w-16 items-center justify-center rounded-lg bg-white">
+              <img src="brain.svg" alt="Brain Gardening logo" class="h-14 w-14">
             </span>
             <span class="brand-wordmark text-3xl font-black text-black sm:text-4xl">Brain Gardening</span>
           </a>
@@ -118,7 +95,7 @@
       </section>
 
       <section class="pb-8 text-center">
-        <h1 class="section-title text-3xl font-black text-black sm:text-4xl">Research and Computer Tips</h1>
+        <h1 class="text-3xl font-black text-black sm:text-4xl">Research and Computer Tips</h1>
       </section>
 
       <section id="board" class="grid gap-8 lg:grid-cols-2">
