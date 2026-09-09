@@ -45,6 +45,7 @@ button { font: inherit; }
 .eyebrow, .section-kicker, .lens-label { margin: 0 0 14px; color: rgba(91,124,250,.95); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; font-weight: 800; }
 .hero h1 { margin: 0; max-width: 720px; font-size: clamp(48px, 7.1vw, 94px); line-height: .94; letter-spacing: -.075em; font-weight: 760; }
 .hero-lead { margin: 28px 0 0; max-width: 640px; color: rgba(17,24,39,.66); font-size: clamp(18px, 2.3vw, 24px); line-height: 1.45; letter-spacing: -.025em; }
+.identity-line { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }.identity-line span { padding: 10px 15px; border: 1px solid rgba(91,124,250,.18); border-radius: 999px; background: rgba(255,255,255,.62); color: rgba(17,24,39,.64); box-shadow: 0 8px 22px rgba(38,54,89,.04); font-size: 14px; font-weight: 680; letter-spacing: -.02em; }
 .hero-actions, .connect-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 34px; }
 .primary-button, .ghost-button { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 18px; border-radius: 999px; font-size: 14px; font-weight: 700; letter-spacing: -.015em; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
 .primary-button { color: #fff; background: #111827; box-shadow: 0 16px 38px rgba(17,24,39,.18); }
